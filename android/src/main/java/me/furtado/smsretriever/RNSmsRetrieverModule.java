@@ -11,13 +11,14 @@ import com.facebook.react.bridge.ReactMethod;
 
 final class RNSmsRetrieverModule extends ReactContextBaseJavaModule {
 
-  private final PhoneNumberHelper mPhoneNumberHelper = new PhoneNumberHelper();
-  private final SmsHelper mSmsHelper;
+    private final SmsHelper mSmsHelper;
+    private final PhoneNumberHelper mPhoneNumberHelper;
 
-  RNSmsRetrieverModule(@NonNull final ReactApplicationContext context) {
-    super(context);
-    mSmsHelper = new SmsHelper(context);
-  }
+    RNSmsRetrieverModule(@NonNull final ReactApplicationContext context) {
+        super(context);
+        mSmsHelper = new SmsHelper(context);
+        mPhoneNumberHelper = new PhoneNumberHelper(context);
+    }
 
   //region - ReactContextBaseJavaModule
   

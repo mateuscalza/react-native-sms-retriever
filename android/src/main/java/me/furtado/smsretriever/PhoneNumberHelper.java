@@ -19,6 +19,11 @@ import com.google.android.gms.auth.api.credentials.HintRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+
+
 final class PhoneNumberHelper {
 
     private static final int REQUEST_PHONE_NUMBER_REQUEST_CODE = 1;
@@ -38,9 +43,11 @@ final class PhoneNumberHelper {
     private GoogleApiClient mGoogleApiClient;
     private Promise mPromise;
     private Listener mListener;
+    private final ReactApplicationContext mReactApplicationContext;
 
-
-    PhoneNumberHelper() { }
+    PhoneNumberHelper(ReactApplicationContext reactApplicationContext) {
+        mReactApplicationContext = reactApplicationContext;
+    }
 
     //region - Package Access
 
@@ -78,14 +85,19 @@ final class PhoneNumberHelper {
             return;
         }
 
-        final HintRequest request = new HintRequest.Builder()
-                .setPhoneNumberIdentifierSupported(true)
-                .build();
 
-        final GoogleApiClient googleApiClient = getGoogleApiClient(context, activity);
+        // final ReactApplicationContext reactContext = getReactApplicationContext();
+        Activity currentActivity = mReactApplicationContext.getCurrentActivity();
 
-        final PendingIntent intent = Auth.CredentialsApi
-                .getHintPickerIntent(googleApiClient, request);
+        final Intent hintPickerIntent = new Intent(context, activity.getClass());
+        hintPickerIntent.setAction(CredentialsApi.ACTION_HINT_PICKER);
+
+        final PendingIntent intent = PendingIntent.getActivity(
+                context,
+                0, 
+                hintPickerIntent,
+                PendingIntent.FLAG_IMMUTABLE  // FLAG_IMMUTABLE ou FLAG_MUTABLE
+        );
 
         try {
             activity.startIntentSenderForResult(intent.getIntentSender(),
